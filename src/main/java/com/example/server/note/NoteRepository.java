@@ -1,6 +1,5 @@
 package com.example.server.note;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -16,12 +15,8 @@ class NoteRepository {
     }
 
     int maxId() {
-        var sql = """
-                SELECT max(id) FROM note;
-                """;
-        var id = jdbcClient.sql(sql)
-                .query(Integer.class)
-                .optional();
+        var sql = "SELECT max(id) FROM note;";
+        var id = jdbcClient.sql(sql).query(Integer.class).optional();
         return id.isPresent() ? id.get() : 0;
     }
 
@@ -55,7 +50,7 @@ class NoteRepository {
                 .update();
     }
 
-    List<Note> findAll() {
+    Iterable<Note> findAll() {
         var sql = """
                 SELECT id, done, content
                     FROM note;

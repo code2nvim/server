@@ -1,7 +1,5 @@
 package com.example.server.note;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +19,13 @@ class NoteController {
         this.noteRepository = noteRepository;
         noteRepository.createTable();
         noteRepository.deleteAll(); // TODO: remove this line
-        save();
+        save(1); // TODO: remove this line
+        save(2); // TODO: remove this line
+        save(3); // TODO: remove this line
     }
 
     @GetMapping("")
-    List<Note> findAll() {
+    Iterable<Note> findAll() {
         return noteRepository.findAll();
     }
 
@@ -38,13 +38,12 @@ class NoteController {
         return note.get();
     }
 
-    void save() {
+    void save(int id) {
         // TODO: receive data from client
-        int id = noteRepository.maxId() + 1;
         noteRepository.save(new Note(
                 id,
                 false,
-                "first"));
+                "content"));
     }
 
 }
