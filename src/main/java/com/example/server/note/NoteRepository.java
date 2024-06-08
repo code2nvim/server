@@ -1,5 +1,6 @@
 package com.example.server.note;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -16,8 +17,10 @@ class NoteRepository {
 
     int maxId() {
         var sql = "SELECT max(id) FROM note;";
-        var id = jdbcClient.sql(sql).query(Integer.class).optional();
-        return id.isPresent() ? id.get() : 0;
+        Optional<Integer> id = jdbcClient.sql(sql)
+                .query(Integer.class)
+                .optional();
+        return id.isEmpty() ? 0 : id.get();
     }
 
     void createTable() {
@@ -32,25 +35,7 @@ class NoteRepository {
                 .update();
     }
 
-    void deleteAll() {
-        var sql = """
-                DELETE FROM note;
-                """;
-        jdbcClient.sql(sql)
-                .update();
-    }
-
-    void deleteById(int id) {
-        var sql = """
-                DELETE FROM note
-                    WHERE id = ?;
-                """;
-        jdbcClient.sql(sql)
-                .params(id)
-                .update();
-    }
-
-    Iterable<Note> findAll() {
+    List<Note> findAll() {
         var sql = """
                 SELECT id, done, content
                     FROM note;
@@ -64,10 +49,10 @@ class NoteRepository {
         var sql = """
                 SELECT id, done, content
                     FROM note
-                    WHERE id = ?;
+                    WHERE id = :id;
                 """;
         return jdbcClient.sql(sql)
-                .params(id)
+                .param("id", id)
                 .query(Note.class)
                 .optional();
     }
@@ -75,11 +60,50 @@ class NoteRepository {
     void save(Note note) {
         var sql = """
                 INSERT INTO note (id, done, content)
-                    VALUES (?, ?, ?);
+                    VALUES (:id, :done, :content);
                 """;
         jdbcClient.sql(sql)
-                .params(note.id(), note.done(), note.content())
+                .param("id", note.id())
+                .param("done", note.done())
+                .param("content", note.content())
                 .update();
+    }
+
+    void update(Note note) {
+        var sql = """
+                UPDATE note
+                    SET done = :done, content = :content
+                    WHERE id = :id;
+                """;
+        int num = jdbcClient.sql(sql)
+                .param("id", note.id())
+                .param("done", note.done())
+                .param("content", note.content())
+                .update();
+        if (num == 0) {
+            throw new RuntimeException("Note not found");
+        }
+    }
+
+    void deleteAll() {
+        var sql = """
+                DELETE FROM note;
+                """;
+        jdbcClient.sql(sql)
+                .update();
+    }
+
+    void deleteById(int id) {
+        var sql = """
+                DELETE FROM note
+                    WHERE id = :id;
+                """;
+        int num = jdbcClient.sql(sql)
+                .param("id", id)
+                .update();
+        if (num == 0) {
+            throw new RuntimeException("Note note found");
+        }
     }
 
 }
