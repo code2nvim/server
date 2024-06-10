@@ -27,7 +27,7 @@ class NoteRepository {
         var sql = """
                 CREATE TABLE IF NOT EXISTS note (
                     id integer,
-                    done boolean,
+                    processing boolean,
                     content varchar
                 );
                 """;
@@ -37,7 +37,7 @@ class NoteRepository {
 
     List<Note> findAll() {
         var sql = """
-                SELECT id, done, content
+                SELECT id, processing, content
                     FROM note;
                 """;
         return jdbcClient.sql(sql)
@@ -47,7 +47,7 @@ class NoteRepository {
 
     Optional<Note> findById(int id) {
         var sql = """
-                SELECT id, done, content
+                SELECT id, processing, content
                     FROM note
                     WHERE id = :id;
                 """;
@@ -59,12 +59,12 @@ class NoteRepository {
 
     void save(Note note) {
         var sql = """
-                INSERT INTO note (id, done, content)
-                    VALUES (:id, :done, :content);
+                INSERT INTO note (id, processing, content)
+                    VALUES (:id, :processing, :content);
                 """;
         jdbcClient.sql(sql)
                 .param("id", note.id())
-                .param("done", note.done())
+                .param("processing", note.processing())
                 .param("content", note.content())
                 .update();
     }
@@ -72,12 +72,12 @@ class NoteRepository {
     void update(Note note) {
         var sql = """
                 UPDATE note
-                    SET done = :done, content = :content
+                    SET processing = :processing, content = :content
                     WHERE id = :id;
                 """;
         int num = jdbcClient.sql(sql)
                 .param("id", note.id())
-                .param("done", note.done())
+                .param("processing", note.processing())
                 .param("content", note.content())
                 .update();
         if (num == 0) {

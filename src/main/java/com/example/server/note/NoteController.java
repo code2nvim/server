@@ -23,12 +23,15 @@ class NoteController {
     NoteController(NoteRepository noteRepository) {
         this.noteRepository = noteRepository;
         noteRepository.createTable();
-        noteRepository.deleteAll(); // TODO: remove this line
-        noteRepository.save(new Note(1, false, "first")); // TODO: remove this line
-        noteRepository.save(new Note(2, false, "second")); // TODO: remove this line
-        noteRepository.save(new Note(3, false, "third")); // TODO: remove this line
-        noteRepository.update(new Note(2, true, "second")); // TODO: remove this line
-        noteRepository.deleteById(1); // TODO: remove this line
+
+        /* TODO: remove below */
+        noteRepository.deleteAll();
+        noteRepository.save(new Note(1, false, "first"));
+        noteRepository.save(new Note(2, false, "second"));
+        noteRepository.save(new Note(3, false, "third"));
+        noteRepository.update(new Note(2, true, "second"));
+        noteRepository.deleteById(1);
+        /* TODO: remove above */
     }
 
     @GetMapping("")
@@ -50,7 +53,7 @@ class NoteController {
     void add(@RequestBody Note note) {
         noteRepository.save(new Note(
                 noteRepository.maxId() + 1,
-                note.done(),
+                note.processing(),
                 note.content()));
     }
 
