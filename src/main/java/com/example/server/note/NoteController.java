@@ -23,15 +23,15 @@ class NoteController {
     NoteController(NoteRepository noteRepository) {
         this.noteRepository = noteRepository;
         noteRepository.createTable();
+    }
 
-        /* TODO: remove below */
-        noteRepository.deleteAll();
-        noteRepository.save(new Note(1, false, "first"));
-        noteRepository.save(new Note(2, false, "second"));
-        noteRepository.save(new Note(3, false, "third"));
-        noteRepository.update(new Note(2, true, "second"));
-        noteRepository.deleteById(1);
-        /* TODO: remove above */
+    @PostMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
+    void add(@RequestBody String content) {
+        noteRepository.save(new Note(
+                noteRepository.maxId() + 1,
+                false,
+                content));
     }
 
     @GetMapping("")
@@ -46,15 +46,6 @@ class NoteController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return note.get();
-    }
-
-    @PostMapping("/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    void add(@RequestBody Note note) {
-        noteRepository.save(new Note(
-                noteRepository.maxId() + 1,
-                note.processing(),
-                note.content()));
     }
 
     @PutMapping("/{id}")
