@@ -27,7 +27,7 @@ class NoteRepository {
         var sql = """
                 CREATE TABLE IF NOT EXISTS note (
                     id integer,
-                    processing boolean,
+                    doing boolean,
                     content varchar
                 );
                 """;
@@ -37,7 +37,7 @@ class NoteRepository {
 
     List<Note> findAll() {
         var sql = """
-                SELECT id, processing, content
+                SELECT id, doing, content
                     FROM note;
                 """;
         return jdbcClient.sql(sql)
@@ -47,7 +47,7 @@ class NoteRepository {
 
     Optional<Note> findById(int id) {
         var sql = """
-                SELECT id, processing, content
+                SELECT id, doing, content
                     FROM note
                     WHERE id = :id;
                 """;
@@ -59,12 +59,12 @@ class NoteRepository {
 
     void save(Note note) {
         var sql = """
-                INSERT INTO note (id, processing, content)
-                    VALUES (:id, :processing, :content);
+                INSERT INTO note (id, doing, content)
+                    VALUES (:id, :doing, :content);
                 """;
         jdbcClient.sql(sql)
                 .param("id", note.id())
-                .param("processing", note.processing())
+                .param("doing", note.doing())
                 .param("content", note.content())
                 .update();
     }
@@ -72,12 +72,12 @@ class NoteRepository {
     void update(Note note) {
         var sql = """
                 UPDATE note
-                    SET processing = :processing, content = :content
+                    SET doing = :doing, content = :content
                     WHERE id = :id;
                 """;
         int num = jdbcClient.sql(sql)
                 .param("id", note.id())
-                .param("processing", note.processing())
+                .param("doing", note.doing())
                 .param("content", note.content())
                 .update();
         if (num == 0) {
